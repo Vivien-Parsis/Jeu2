@@ -40,15 +40,15 @@ function update() {
       this.player.setVelocityX(0);
       this.obstacle.setPosition(RandInt(25,config.width-50), -50);
       this.player.setPosition(config.width / 2, config.height - 50);
-      let currentTime = 30+this.timer.getProgress()*-1;
+      let TimeLeft = 30+this.timer.getProgress()*-1;
     }
   
     if(pause==false)
     {
-      let currentTime = Math.trunc(30+this.timer.getProgress()*-30);
-      let speed = (350 * this.timer.getProgress())+200; 
+      let TimeLeft = Math.trunc(30+this.timer.getProgress()*-30);
+      let speed = (400 * this.timer.getProgress())+250; 
   
-      this.chrono.setText('⏲timer: '+currentTime.toString()+'s');
+      this.chrono.setText('⏲timer: '+TimeLeft.toString()+'s');
       let cursors = this.input.keyboard.createCursorKeys();
       if ((cursors.left.isDown || this.q.isDown) || (cursors.right.isDown || this.d.isDown)) 
       {this.player.setVelocityX(cursors.left.isDown || this.q.isDown ? -270 : 270);}
@@ -73,7 +73,7 @@ function update() {
       );
       if(this.obstacle.y > config.height)
       {this.obstacle.setPosition(RandInt(25,config.width-50), -50);}
-      if(currentTime==0)
+      if(TimeLeft==0)
       {WinOrLose='Win';}
         
       if(WinOrLose == 'lose')
@@ -122,9 +122,9 @@ function reset(PauseOrNot)
 
 const config = {
     type: Phaser.AUTO,
-    width: 350,
-    height: 500,
-    autoCenter: true,
+    width: 400,
+    height: 550,
+    //autoCenter: true,
     backgroundColor: '#020E55',
     physics: {
         default: 'arcade',
