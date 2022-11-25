@@ -1,0 +1,12 @@
+html{
+  background-image : url(assets/fond.jpg);
+  background-repeat: no-repeat;
+  background-color: #000000;
+  background-size : 100% 100%;
+  font-family : arial;
+}
+span{
+  border: 2px outset #000a8f;
+  background-color: #dddddd;
+}
+
