@@ -24,7 +24,7 @@ function create() {
     this.obstacle.setImmovable(true);
 
     this.chrono = this.add.text(10,10,'chrono',{font: '16px arial',fill :'#dddddd', stroke:'#000000',strokeThickness:5});
-    this.win = this.add.text(config.width / 3+12, 75, '', {font: '20px arial',fill :'#eeee00', stroke:'#222222',strokeThickness:6});
+    this.win = this.add.text(config.width / 3, 75, '', {font: '20px arial',fill :'#eeee00', stroke:'#222222',strokeThickness:6});
 
     this.timer = this.time.delayedCall(30000,onEvent,null,this);
 }
@@ -35,16 +35,17 @@ function update() {
     {
       pause=false;
       WinOrLose = null;
+      this.timer = this.time.delayedCall(30000,onEvent,null,this);
       this.obstacle.setVelocityY(0);
       this.player.setVelocityX(0);
       this.obstacle.setPosition(RandInt(25,config.width-50), -50);
       this.player.setPosition(config.width / 2, config.height - 50);
-      
+      let currentTime = 30+this.timer.getProgress()*-1;
     }
   
     if(pause==false)
     {
-      let currentTime = Math.trunc(this.timer.getProgress()*30);
+      let currentTime = Math.trunc(30+this.timer.getProgress()*-30);
       let speed = (350 * this.timer.getProgress())+200; 
   
       this.chrono.setText('⏲timer: '+currentTime.toString()+'s');
@@ -72,7 +73,7 @@ function update() {
       );
       if(this.obstacle.y > config.height)
       {this.obstacle.setPosition(RandInt(25,config.width-50), -50);}
-      if(currentTime==30)
+      if(currentTime==0)
       {WinOrLose='Win';}
         
       if(WinOrLose == 'lose')
