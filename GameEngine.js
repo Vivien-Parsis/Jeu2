@@ -1,6 +1,5 @@
-
 var timer;
-var chrono;
+var chronoText;
 var win;
 var WinOrLose;
 var pause = false;
@@ -16,48 +15,22 @@ function create() {
     this.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-    this.add.image(config.width/2,config.height/2,'background').setScale(config.width/240, config.height/320);
-    this.player = this.physics.add.image(config.width / 2, config.height - 50, 'player').setScale(0.04, 0.04);
-    this.obstacle = this.physics.add.image(config.width / 2, 50, 'obstacle').setScale(0.03, 0.03);
+    this.background = this.physics.add.image(config.width/2,config.height/2,'background');
+    this.background.setScale(config.width/this.background.width, config.height/this.background.height);
+    
+    this.player = this.physics.add.image(config.width / 2, 0, 'player').setScale(0.04, 0.04);
+    this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
+    this.obstacle = this.physics.add.image(config.width / 2, 50, 'obstacle').setScale(0.05, 0.05);
     this.player.setCollideWorldBounds(true);
     this.player.setImmovable(true);
     this.obstacle.setImmovable(true);
 
-    this.chrono = this.add.text(10,10,'chrono',{font: '16px arial',fill :'#dddddd', stroke:'#000000',strokeThickness:5});
-    this.win = this.add.text(config.width / 3, 75, '', {font: '20px arial',fill :'#eeee00', stroke:'#222222',strokeThickness:6});
+    this.chronoText = this.add.text(10,10,'chrono',{fontfamily:"Passion-Regu",fill:'#dddddd',stroke:'#000000',strokeThickness:5});
+    this.win = this.add.text(config.width/3,75,'',{fontfamily:"Passion-Regu",fill:'#eeee00',stroke:'#222222',strokeThickness:6});
 
     this.timer = this.time.delayedCall(30000,onEvent,null,this);
-}
 
-function update() {
-    
-    if(this.r.isDown)
-    {
-      pause=false;
-      WinOrLose = null;
-      this.timer = this.time.delayedCall(30000,onEvent,null,this);
-      this.obstacle.setVelocityY(0);
-      this.player.setVelocityX(0);
-      this.obstacle.setPosition(RandInt(25,config.width-50), -50);
-      this.player.setPosition(config.width / 2, config.height - 50);
-      let TimeLeft = 30+this.timer.getProgress()*-1;
-    }
-  
-    if(pause==false)
-    {
-      let TimeLeft = Math.trunc(30+this.timer.getProgress()*-30);
-      let speed = (400 * this.timer.getProgress())+250; 
-  
-      this.chrono.setText('⏲timer: '+TimeLeft.toString()+'s');
-      let cursors = this.input.keyboard.createCursorKeys();
-      if ((cursors.left.isDown || this.q.isDown) || (cursors.right.isDown || this.d.isDown)) 
-      {this.player.setVelocityX(cursors.left.isDown || this.q.isDown ? -270 : 270);}
-      else 
-      {this.player.setVelocityX(0);}
-    
-      this.obstacle.setVelocityY(speed);
-      
-      this.physics.add.collider
+    this.physics.add.collider
       (
           this.player,
           this.obstacle,
@@ -71,8 +44,39 @@ function update() {
           }
         }
       );
-      if(this.obstacle.y > config.height)
-      {this.obstacle.setPosition(RandInt(25,config.width-50), -50);}
+}
+
+function update() {
+    
+    if(this.r.isDown)
+    {
+      pause=false;
+      WinOrLose = null;
+      this.timer = this.time.delayedCall(30000,onEvent,null,this);
+      this.obstacle.setVelocityY(0);
+      this.player.setVelocityX(0);
+      this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
+      this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
+      let TimeLeft = 30+this.timer.getProgress()*-1;
+    }
+  
+    if(pause==false)
+    {
+      let TimeLeft = Math.trunc(30+this.timer.getProgress()*-30);
+      let speed = (400 * this.timer.getProgress())+300; 
+  
+      this.chronoText.setText('⏲timer: '+TimeLeft.toString()+'s');
+      let cursors = this.input.keyboard.createCursorKeys();
+      if ((cursors.left.isDown || this.q.isDown) || (cursors.right.isDown || this.d.isDown)) 
+      {this.player.setVelocityX(cursors.left.isDown || this.q.isDown ? -270 : 270);}
+      else 
+      {this.player.setVelocityX(0);}
+    
+      this.obstacle.setVelocityY(speed);
+      
+      if(this.obstacle.y > config.height+(this.obstacle.displayWidth/2))
+      {this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);}
+      
       if(TimeLeft==0)
       {WinOrLose='Win';}
         
@@ -82,24 +86,25 @@ function update() {
         pause = true;
         this.obstacle.setVelocityY(0);
         this.player.setVelocityX(0);
-        this.obstacle.setPosition(RandInt(25,config.width-50), -50);
-        this.player.setPosition(config.width / 2, config.height - 50);
+        this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
+        this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
       }
+      
       if(WinOrLose == 'Win')
       {
         this.win.setText('You Win !🏆');  
         pause = true;
         this.obstacle.setVelocityY(0);
         this.player.setVelocityX(0);
-        this.obstacle.setPosition(RandInt(25,config.width-50), -50);
-        this.player.setPosition(config.width / 2, config.height - 50);
+        this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
+        this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
       }
+      
       if(WinOrLose == null)
       {
         this.win.setText(); 
       }
     }
- 
 }
 
 function onEvent()
@@ -107,16 +112,20 @@ function onEvent()
 
 function RandInt(min, max)
 {
+  Math.round(min);
+  Math.round(max);
   return Math.random() * (max - min) + min;
 }
+
+
 
 function reset(PauseOrNot)
   {
     pause = PauseOrNot;
     this.obstacle.setVelocityY(0);
     this.player.setVelocityX(0);
-    this.obstacle.setPosition(RandInt(25,config.width-50), -50);
-    this.player.setPosition(config.width / 2, config.height - 50);
+    this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
+    this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
   }
 
 
