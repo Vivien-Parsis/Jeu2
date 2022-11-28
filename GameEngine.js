@@ -1,6 +1,6 @@
 var timer;
 var chronoText;
-var win;
+var winText;
 var WinOrLose;
 var pause = false;
 
@@ -26,7 +26,7 @@ function create() {
     this.obstacle.setImmovable(true);
 
     this.chronoText = this.add.text(10,10,'chrono',{fontfamily:"Passion-Regu",fill:'#dddddd',stroke:'#000000',strokeThickness:5});
-    this.win = this.add.text(config.width/3,75,'',{fontfamily:"Passion-Regu",fill:'#eeee00',stroke:'#222222',strokeThickness:6});
+    this.winText = this.add.text(config.width/3,75,'',{fontfamily:"Passion-Regu",fill:'#eeee00',stroke:'#222222',strokeThickness:6});
 
     this.timer = this.time.delayedCall(30000,onEvent,null,this);
 
@@ -34,7 +34,7 @@ function create() {
       (
           this.player,
           this.obstacle,
-          function(_player,_obstacle,_win)
+          function(_player,_obstacle)
         {
           if(_player.body.touching.up && _obstacle.body.touching.down
              || _player.body.touching.left && _obstacle.body.touching.right
@@ -80,9 +80,12 @@ function update() {
       if(TimeLeft==0)
       {WinOrLose='Win';}
         
-      if(WinOrLose == 'lose')
+      if(WinOrLose == 'lose' || WinOrLose == 'Win')
       {
-        this.win.setText('You lose');  
+        if(WinOrLose == 'lose')
+        {this.winText.setText('You lose');}
+        if(WinOrLose == 'Win')
+        {this.winText.setText('You Win !🏆');} 
         pause = true;
         this.obstacle.setVelocityY(0);
         this.player.setVelocityX(0);
@@ -90,19 +93,11 @@ function update() {
         this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
       }
       
-      if(WinOrLose == 'Win')
-      {
-        this.win.setText('You Win !🏆');  
-        pause = true;
-        this.obstacle.setVelocityY(0);
-        this.player.setVelocityX(0);
-        this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
-        this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
-      }
+      
       
       if(WinOrLose == null)
       {
-        this.win.setText(); 
+        this.winText.setText(); 
       }
     }
 }
