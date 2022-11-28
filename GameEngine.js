@@ -5,12 +5,16 @@ var WinOrLose;
 var pause = false;
 
 function preload() {
-    this.load.image('player', 'assets/player.png');
-    this.load.image('obstacle', 'assets/rock.png');
-    this.load.image('background', 'assets/background.png')
+    this.load.image('player', 'assets/image/player.png');
+    this.load.image('obstacle', 'assets/image/rock.png');
+    this.load.image('background', 'assets/image/background.png');
+    //this.load.audio('musicBG', ['assets/audio/.mp3', 'assets/audio/.ogg']);
 }
 
 function create() {
+    //music = game.add.audio('musicBG');
+    //music.loop = true;
+    //music.play();
     this.q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     this.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -39,9 +43,7 @@ function create() {
           if(_player.body.touching.up && _obstacle.body.touching.down
              || _player.body.touching.left && _obstacle.body.touching.right
              || _player.body.touching.right && _obstacle.body.touching.left)
-          {
-            WinOrLose = 'lose';
-          }
+          {WinOrLose = 'lose';}
         }
       );
 }
