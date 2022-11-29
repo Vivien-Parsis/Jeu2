@@ -8,6 +8,7 @@ function preload() {
     this.load.image('player', 'assets/image/player.png');
     this.load.image('obstacle', 'assets/image/rock.png');
     this.load.image('background', 'assets/image/background.png');
+    this.load.image('resetbutton', 'assets/image/reset.png');
     //this.load.audio('musicBG', ['assets/audio/.mp3', 'assets/audio/.ogg']);
 }
 
@@ -21,6 +22,9 @@ function create() {
 
     this.background = this.physics.add.image(config.width/2,config.height/2,'background');
     this.background.setScale(config.width/this.background.width, config.height/this.background.height);
+
+    this.resetbutton = this.physics.add.image(0,0,'resetbutton').setScale(0.1,0.1);
+    this.resetbutton.setPosition(config.width-(this.resetbutton.displayWidth/2)-5,(this.resetbutton.displayHeight/2)+5);
     
     this.player = this.physics.add.image(config.width / 2, 0, 'player').setScale(0.04, 0.04);
     this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
@@ -51,7 +55,11 @@ function create() {
 function update() {
     var pointer = this.input.activePointer;
   
-    if(this.r.isDown)
+    if(this.r.isDown || pointer.isDown
+      && pointer.x > this.resetbutton.x-(this.resetbutton.displayWidth/2)
+      && pointer.x < this.resetbutton.x+(this.resetbutton.displayWidth/2)
+      && pointer.y > this.resetbutton.y-(this.resetbutton.displayHeight/2)
+      && pointer.y < this.resetbutton.y+(this.resetbutton.displayHeight/2))
     {
       pause=false;
       WinOrLose = null;
