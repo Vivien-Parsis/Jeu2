@@ -49,7 +49,8 @@ function create() {
 }
 
 function update() {
-    
+    var pointer = this.input.activePointer;
+  
     if(this.r.isDown)
     {
       pause=false;
@@ -69,6 +70,13 @@ function update() {
   
       this.chronoText.setText('⏲timer: '+TimeLeft.toString()+'s');
       let cursors = this.input.keyboard.createCursorKeys();
+      
+      if(pointer.isDown 
+         && pointer.x>(this.player.x-(this.player.displayWidth/2)) && pointer.x<(this.player.x+(this.player.displayWidth/2))
+         && pointer.x>this.player.displayWidth/2 && pointer.x<config.width-(this.player.displayWidth/2)
+         && pointer.y>this.player.y-this.player.displayHeight)
+      {this.player.setPosition(pointer.x, this.player.y);}
+      
       if ((cursors.left.isDown || this.q.isDown) || (cursors.right.isDown || this.d.isDown)) 
       {this.player.setVelocityX(cursors.left.isDown || this.q.isDown ? -270 : 270);}
       else 
