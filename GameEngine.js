@@ -2,6 +2,7 @@ var timer;
 var chronoText;
 var winText;
 var WinOrLose;
+var timeMax = 60;
 var pause = false;
 
 function preload() {
@@ -9,13 +10,20 @@ function preload() {
     this.load.image('obstacle', 'assets/image/rock.png');
     this.load.image('background', 'assets/image/background.png');
     this.load.image('resetbutton', 'assets/image/reset.png');
-    //this.load.audio('musicBG', ['assets/audio/.mp3', 'assets/audio/.ogg']);
+    
+    this.load.audio('win','assets/sound/win.mp3');
+    this.load.audio('fail','assets/sound/fail.mp3');
+    this.load.audio('musicBG', 'assets/sound/musicBG.mp3');
 }
 
 function create() {
-    //music = game.add.audio('musicBG');
-    //music.loop = true;
-    //music.play();
+    var music = this.sound.add('musicBG',
+    {
+      mute: false,
+      volume: 1,
+      loop: true,
+      delay: 1
+    });
     this.q = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     this.d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
@@ -33,10 +41,12 @@ function create() {
     this.player.setImmovable(true);
     this.obstacle.setImmovable(true);
 
-    this.chronoText = this.add.text(10,10,'chrono',{fontfamily:"Passion-Regu",fill:'#dddddd',stroke:'#000000',strokeThickness:5});
-    this.winText = this.add.text(config.width/3,75,'',{fontfamily:"Passion-Regu",fill:'#eeee00',stroke:'#222222',strokeThickness:6});
+    this.chronoText = this.add.text(10,10,'chrono',
+    {fontfamily:"Passion-Regu",fill:'#dddddd',stroke:'#000000',strokeThickness:5});
+    this.winText = this.add.text(config.width/3,75,'',
+    {fontfamily:"Passion-Regu",fill:'#eeee00',stroke:'#222222',strokeThickness:6});
 
-    this.timer = this.time.delayedCall(30000,onEvent,null,this);
+    this.timer = this.time.delayedCall(30000,null,null,this);
 
     this.physics.add.collider
       (
@@ -52,7 +62,8 @@ function create() {
       );
 }
 
-function update() {
+function update() 
+{
     var pointer = this.input.activePointer;
   
     if(this.r.isDown || pointer.isDown
@@ -63,27 +74,25 @@ function update() {
     {
       pause=false;
       WinOrLose = null;
-      this.timer = this.time.delayedCall(30000,onEvent,null,this);
+      this.timer = this.time.delayedCall(30000,null,null,this);
       this.obstacle.setVelocityY(0);
       this.player.setVelocityX(0);
       this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
       this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
-      let TimeLeft = 30+this.timer.getProgress()*-1;
+      let TimeLeft = timeMax;
     }
   
     if(pause==false)
     {
-      let TimeLeft = Math.trunc(30+this.timer.getProgress()*-30);
-      let speed = (400 * this.timer.getProgress())+300; 
-  
-      this.chronoText.setText('⏲timer: '+TimeLeft.toString()+'s');
-      let cursors = this.input.keyboard.createCursorKeys();
+      this.obstacle.angle +=0.25;
+      let TimeLeft = Math.trunc(timeMax+this.timer.getProgress()*-timeMax);
+      let speed = (200 * this.timer.getProgress())+200; 
       
-      if(pointer.isDown 
-         && pointer.x>(this.player.x-(this.player.displayWidth/2)) && pointer.x<(this.player.x+(this.player.displayWidth/2))
-         && pointer.x>this.player.displayWidth/2 && pointer.x<config.width-(this.player.displayWidth/2)
-         && pointer.y>this.player.y-this.player.displayHeight)
-      {this.player.setPosition(pointer.x, this.player.y);}
+      let text = '⏲timer: '+TimeLeft.toString()+'s';
+      //let debugtext = speed;text += debugtext;
+      this.chronoText.setText(text);
+      
+      let cursors = this.input.keyboard.createCursorKeys();
       
       if ((cursors.left.isDown || this.q.isDown) || (cursors.right.isDown || this.d.isDown)) 
       {this.player.setVelocityX(cursors.left.isDown || this.q.isDown ? -270 : 270);}
@@ -101,9 +110,15 @@ function update() {
       if(WinOrLose == 'lose' || WinOrLose == 'Win')
       {
         if(WinOrLose == 'lose')
-        {this.winText.setText('You lose');}
+        {
+          this.winText.setText('You lose');
+          this.sound.play('win',{volume:1});
+        }
         if(WinOrLose == 'Win')
-        {this.winText.setText('You Win !🏆');} 
+        {
+          this.winText.setText('You Win !🏆');
+          this.sound.play('fail',{volume:1});
+        } 
         pause = true;
         this.obstacle.setVelocityY(0);
         this.player.setVelocityX(0);
@@ -111,17 +126,10 @@ function update() {
         this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
       }
       
-      
-      
       if(WinOrLose == null)
-      {
-        this.winText.setText(); 
-      }
+      {this.winText.setText();}
     }
 }
-
-function onEvent()
-  {console.log('time out');}
 
 function RandInt(min, max)
 {
@@ -130,23 +138,11 @@ function RandInt(min, max)
   return Math.random() * (max - min) + min;
 }
 
-
-
-function reset(PauseOrNot)
-  {
-    pause = PauseOrNot;
-    this.obstacle.setVelocityY(0);
-    this.player.setVelocityX(0);
-    this.obstacle.setPosition(RandInt(this.obstacle.displayWidth/2,config.width - (this.obstacle.displayWidth/2)), -50);
-    this.player.setPosition(config.width / 2, config.height - (this.player.displayHeight/2));
-  }
-
-
 const config = {
     type: Phaser.AUTO,
     width: 400,
     height: 550,
-    //autoCenter: true,
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     backgroundColor: '#020E55',
     physics: {
         default: 'arcade',
